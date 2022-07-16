@@ -1703,14 +1703,20 @@ class TestFakeTensorNonErroring(TestCase):
                 pass
             except torch._subclasses.fake_tensor.DynamicOutputShapeException:
                 self.assertTrue(name in dynamic_output_op_tests or name in sometimes_dynamic_output_op_test)
+import os
+shard_num = os.environ["SHARD_NUMBER"]
+if shard_num == 1:
+    instantiate_device_type_tests(TestCompositeCompliance, globals())
+if shard_num == 2:
+    instantiate_device_type_tests(TestMathBits, globals())
+if shard_num == 3:
+    instantiate_device_type_tests(TestRefsOpsInfo, globals(), only_for="cpu")
 
+if shard_num == 4:
+    instantiate_device_type_tests(TestFakeTensorNonErroring, globals())
+    instantiate_device_type_tests(TestTags, globals())
 
-instantiate_device_type_tests(TestCommon, globals())
-instantiate_device_type_tests(TestCompositeCompliance, globals())
-instantiate_device_type_tests(TestMathBits, globals())
-instantiate_device_type_tests(TestRefsOpsInfo, globals(), only_for="cpu")
-instantiate_device_type_tests(TestFakeTensorNonErroring, globals())
-instantiate_device_type_tests(TestTags, globals())
+# instantiate_device_type_tests(TestCommon, globals())
 
 if __name__ == "__main__":
     run_tests()
